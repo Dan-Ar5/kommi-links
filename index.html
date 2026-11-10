@@ -62,19 +62,34 @@
     <h1 id="title">Abriendo tu Mesa…</h1>
     <p id="subtitle">Si tienes Kommi instalado, ya debería estar abriéndose.</p>
     <div class="code" id="code">------</div>
-    <a class="btn" id="download" href="#">Descargar Kommi</a>
+    <a class="btn" id="download-android" href="#">Descargar en Google Play</a>
+    <a class="btn" id="download-ios" href="#">Descargar en App Store</a>
     <p class="hint">Después de instalarla e iniciar sesión, entra a "Buscar Mesa" e ingresa el código de arriba.</p>
   </div>
   <script>
-    // Actualizar cada vez que se exporte un build nuevo — mismo valor que
-    // LATEST_APK_URL en src/constants/app.ts del proyecto.
-    var LATEST_APK_URL = 'https://expo.dev/artifacts/eas/ETtqX3p7xjHRsW7EhyztX_AoF7V8-7nwcDmIen_VQqM.apk';
+    // Links fijos a las tiendas — mismos valores que PLAY_STORE_URL y
+    // APP_STORE_URL en src/constants/app.ts del proyecto. No cambian con cada
+    // build, así que ya no hay que tocarlos al publicar una versión nueva.
+    var PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.razeia.kommi';
+    var APP_STORE_URL = 'https://apps.apple.com/pe/app/kommi/id6822003785';
 
     var params = new URLSearchParams(window.location.search);
     var code = (params.get('code') || '').replace(/[^0-9]/g, '').slice(0, 6);
 
     document.getElementById('code').textContent = code || '------';
-    document.getElementById('download').href = LATEST_APK_URL;
+    var btnAndroid = document.getElementById('download-android');
+    var btnIos = document.getElementById('download-ios');
+    btnAndroid.href = PLAY_STORE_URL;
+    btnIos.href = APP_STORE_URL;
+
+    // Cada celular ve solo su tienda; en computadora (o si no se reconoce)
+    // se muestran las dos.
+    var ua = navigator.userAgent || '';
+    var isIos = /iPhone|iPad|iPod/i.test(ua) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var isAndroid = /Android/i.test(ua);
+    if (isIos) btnAndroid.style.display = 'none';
+    else if (isAndroid) btnIos.style.display = 'none';
 
     if (code) {
       window.location.href = 'kommi://mesa/unirme?code=' + encodeURIComponent(code);
